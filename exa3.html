@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Gallery</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #151515;
+            width: 100%;
+
+        }
+
+        .thumbnail-container {
+            display: flex;
+            gap: 20px; /* Space between thumbnails */
+            overflow-x: auto; /* Allow horizontal scrolling */
+            white-space: nowrap; /* Prevent wrapping */
+            padding-bottom: 10px; /* Padding at the bottom to add some space from scrollbar */
+        }
+
+        .thumbnail-wrapper {
+            width: calc(25% - 10px); /* 4 per row (adjust as needed) */
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .thumbnail-wrapper img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        .iframe-container {
+            display: flex;
+            justify-content: space-between; /* Distribute space between left and right iframe */
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        /* Left iframe container (main video) */
+        .video-wrapper-left {
+            width: 58%;  /* Main iframe takes up 58% of the container */
+            text-align: center;
+        }
+
+        /* Right iframe container (side thumbnails) */
+        .video-wrapper-right {
+            width: 40%;  /* Right iframe takes up 40% */
+            text-align: center;
+            overflow-y: auto;
+            height: 400px;
+        }
+
+        /* Styles for small iframe (left video) */
+        .iframe-small {
+            width: 100%;
+            height: 400px;
+        }
+
+        /* Thumbnail display for right iframe */
+        .thumbnail-container-right {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .thumbnail-wrapper-right {
+            width: 48%;
+            cursor: pointer;
+        }
+
+        .thumbnail-wrapper-right img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+
+        .download-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: blue;
+            text-decoration: none;
+        }
+
+        /* Styles for suggestion results */
+        #suggestions {
+            width: 320px;
+            top: 125px;
+            background-color: #333;
+            color: white;
+            border-radius: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+            position: absolute;
+            z-index: 1;
+            display: none;
+            margin-left: 39.5%;
+            border-color: red;
+        }
+
+        .suggestion-item {
+            padding: 10px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            background-color: transparent;
+        }
+
+        img {
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .suggestion-item img {
+            width: 40px;
+            height: 40px;
+            border-radius: 5px;
+            margin-right: 10px;
+            object-fit: cover;
+        }
+
+        .suggestion-item:hover {
+            background-color: rgb(230, 21, 21);
+        }
+
+        .search-box {
+            width: 310px;
+            height: 30px;
+            margin-left: 40%;
+            border-radius: 20px;
+            border-color: red;
+            background-color: transparent;
+            margin-top: 70px;
+        }
+
+        .featured-content {
+            height: 70vh;
+        }
+
+        .tittle {
+            font-weight: bold;
+            color: yellow;
+        }
+
+        .video-title {
+            background-color: rgb(47, 66, 66);
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        section {
+            width: 100%;
+            height: 10px;
+        }
+
+        section nav {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Ensures logo and nav items are spaced evenly */
+    padding: 10px 5% 8px 5%;
+    margin-bottom: 20px;
+}
+
+section nav .logo h1 {
+    font-size: 25px;
+    color: #fff;
+    cursor: pointer;
+}
+
+section nav .logo h1 span {
+    color: #ffe100;
+    margin-left: 8px;
+    text-decoration: none;
+}
+
+section nav .right ul {
+    list-style: none;
+    display: flex; /* Ensure the items are displayed in a row */
+    margin: 0; /* Remove default margins */
+    padding: 0;
+}
+
+section nav .right ul li {
+    display: inline-block;
+}
+
+section nav .right ul li a {
+    color: #ffe100;
+    text-decoration: none;
+    transition: 0.4s;
+    margin-right: 80px; /* Adjust the space between nav items */
+}
+
+section nav .right ul li a:hover {
+    color: blue;
+}
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="content-container">
+            <div class="featured-content"
+                style="background: linear-gradient(to bottom, rgba(0,0,0,0), #151515), url(bacground\ \ 1.jpg);"
+            >
+                <section>
+                    <nav>
+                        <div class="logo">
+                            <h1>Ki <span>films</span></h1>
+                        </div>
+                        <div class="right">
+                            <ul>
+                                <li><a href="">Home</a></li>
+                                <li><a href="">Action</a></li>
+                                <li><a href="">Tv Series</a></li>
+                                <li><a href="">Cartoon</a></li>
+                                
+                            </ul>
+                        </div>
+                    </nav>
+                </section>
+                <input type="text" class="search-box" id="search-box" placeholder="Search for a video..." oninput="searchVideos(event)" onkeydown="handleKeyDown(event)">
+                <div id="suggestions"></div>
+            </div>
+        </div>
+    </div>
+
+    <big>
+        <big>
+            <big>
+                <p><div class="tittle">New Releases</div></p>
+            </big>
+        </big>
+    </big>
+
+    <div class="thumbnail-container" id="gallery">
+        <!-- Example Thumbnails -->
+        <div class="video-wrapper" data-title="kevin" data-video="https://www.youtube.com/embed/3JZ_D3ELwOQ" data-download="https://www.youtube.com/watch?v=3JZ_D3ELwOQ" onclick="playVideo(this)">
+            <img src="dilwale.jpg" alt="Video 1">
+            <div class="video-title">kevin</div>
+        </div>
+        <div class="video-wrapper" data-title="kevin" data-video="https://www.youtube.com/embed/3JZ_D3ELwOQ" data-download="https://www.youtube.com/watch?v=3JZ_D3ELwOQ" onclick="playVideo(this)">
+            <img src="dilwale.jpg" alt="Video 1">
+            <div class="video-title">kevin</div>
+        </div>
+        <div class="video-wrapper" data-title="kevin" data-video="https://www.youtube.com/embed/3JZ_D3ELwOQ" data-download="https://www.youtube.com/watch?v=3JZ_D3ELwOQ" onclick="playVideo(this)">
+            <img src="dilwale.jpg" alt="Video 1">
+            <div class="video-title">kevin</div>
+        </div>
+        <div class="video-wrapper" data-title="kevin" data-video="https://www.youtube.com/embed/3JZ_D3ELwOQ" data-download="https://www.youtube.com/watch?v=3JZ_D3ELwOQ" onclick="playVideo(this)">
+            <img src="dilwale.jpg" alt="Video 1">
+            <div class="video-title">kevin</div>
+        </div>
+        <div class="video-wrapper" data-title="kevin" data-video="https://www.youtube.com/embed/3JZ_D3ELwOQ" data-download="https://www.youtube.com/watch?v=3JZ_D3ELwOQ" onclick="playVideo(this)">
+            <img src="dilwale.jpg" alt="Video 1">
+            <div class="video-title">kevin</div>
+        </div>
+        <div class="video-wrapper" data-title="kevin" data-video="https://www.youtube.com/embed/3JZ_D3ELwOQ" data-download="https://www.youtube.com/watch?v=3JZ_D3ELwOQ" onclick="playVideo(this)">
+            <img src="dilwale.jpg" alt="Video 1">
+            <div class="video-title">kevin</div>
+        </div>
+        <div class="video-wrapper" data-title="kevin" data-video="https://www.youtube.com/embed/3JZ_D3ELwOQ" data-download="https://www.youtube.com/watch?v=3JZ_D3ELwOQ" onclick="playVideo(this)">
+            <img src="dilwale.jpg" alt="Video 1">
+            <div class="video-title">kevin</div>
+        </div>
+    </div>
+
+    <div class="iframe-container" id="video-container">
+        <!-- Left video iframe -->
+        <div class="video-wrapper-left">
+            <iframe id="iframe-small" class="iframe-small" frameborder="0" allowfullscreen></iframe>
+            <a id="download-link" class="download-link" target="_blank">Download</a>
+            <button onclick="showGallery()">Back to Gallery</button> <!-- Button to go back to gallery -->
+        </div>
+    </div>
+
+    <script>
+        // Array holding video data with images
+        const videos = [
+            { title: "kevin", videoUrl: "https://www.youtube.com/embed/3JZ_D3ELwOQ", downloadUrl: "https://www.youtube.com/watch?v=3JZ_D3ELwOQ", imageUrl: "dilwale.jpg" },
+            { title: "kevin", videoUrl: "https://www.youtube.com/embed/3JZ_D3ELwOQ", downloadUrl: "https://www.youtube.com/watch?v=3JZ_D3ELwOQ", imageUrl: "dilwale.jpg" },
+            { title: "kevin", videoUrl: "https://www.youtube.com/embed/3JZ_D3ELwOQ", downloadUrl: "https://www.youtube.com/watch?v=3JZ_D3ELwOQ", imageUrl: "dilwale.jpg" },
+           
+            // Add more videos as needed
+        ];
+
+        // Function to play a video and display thumbnails in the iframe
+        function playVideo(wrapper) {
+            const videoUrl = wrapper.getAttribute("data-video");
+            const downloadUrl = wrapper.getAttribute("data-download");
+            const videoContainer = document.getElementById("video-container");
+            const iframeSmall = document.getElementById("iframe-small");
+            const downloadLink = document.getElementById("download-link");
+
+            // Hide the gallery and show the video container
+            document.getElementById("gallery").style.display = "none";
+            videoContainer.style.display = "flex";
+            iframeSmall.src = `${videoUrl}?autoplay=1`;
+            downloadLink.href = downloadUrl;
+
+            // Hide the featured-content and tittle
+            document.querySelector('.featured-content').style.display = 'none';  // Hide featured-content
+            document.querySelector('.tittle').style.display = 'none';  // Hide tittle
+
+            // Show download link
+            downloadLink.style.display = "block";
+
+            // Populate the right side thumbnails
+            const thumbnailContainerRight = document.getElementById("thumbnail-container-right");
+            thumbnailContainerRight.innerHTML = ''; // Clear previous thumbnails
+
+            // Add the thumbnails for the videos
+            videos.forEach(video => {
+                const thumbnailWrapper = document.createElement("div");
+                thumbnailWrapper.classList.add("thumbnail-wrapper-right");
+                thumbnailWrapper.onclick = () => changeMainVideo(video); // Attach click event to change the main video
+
+                const img = document.createElement("img");
+                img.src = video.imageUrl;
+                thumbnailWrapper.appendChild(img);
+
+                thumbnailContainerRight.appendChild(thumbnailWrapper);
+            });
+        }
+
+        // Function to change the main video when a thumbnail is clicked
+        function changeMainVideo(video) {
+            const iframeSmall = document.getElementById("iframe-small");
+            const downloadLink = document.getElementById("download-link");
+
+            iframeSmall.src = video.videoUrl + "?autoplay=1"; // Update the iframe with the selected video
+            downloadLink.href = video.downloadUrl;
+        }
+
+        // Function to show the gallery again
+        function showGallery() {
+            // Show the gallery again
+            document.getElementById("gallery").style.display = "flex";
+            document.getElementById("video-container").style.display = "none";
+            
+            // Show the featured content and tittle again
+            document.querySelector('.featured-content').style.display = 'block';
+            document.querySelector('.tittle').style.display = 'block';
+        }
+
+        // Function to search videos
+        function searchVideos(event) {
+            const query = event.target.value.toLowerCase();
+            const suggestions = document.getElementById("suggestions");
+
+            if (query.length > 0) {
+                const filteredVideos = videos.filter(video =>
+                    video.title.toLowerCase().includes(query)
+                );
+
+                suggestions.innerHTML = ''; // Clear previous suggestions
+
+                if (filteredVideos.length > 0) {
+                    // Show matching suggestions with images
+                    filteredVideos.forEach(video => {
+                        const suggestionItem = document.createElement("div");
+                        suggestionItem.classList.add("suggestion-item");
+
+                        const img = document.createElement("img");
+                        img.src = video.imageUrl;
+                        suggestionItem.appendChild(img);
+
+                        const titleText = document.createElement("span");
+                        titleText.textContent = video.title;
+                        suggestionItem.appendChild(titleText);
+
+                        suggestionItem.onclick = () => playSearchResult(video.title);
+                        suggestions.appendChild(suggestionItem);
+                    });
+                    suggestions.style.display = "block";
+                } else {
+                    // Display "No results found" message
+                    const noResultsMessage = document.createElement("div");
+                    noResultsMessage.classList.add("suggestion-item");
+                    noResultsMessage.textContent = "No results found";
+                    suggestions.appendChild(noResultsMessage);
+                    suggestions.style.display = "block";
+                }
+            } else {
+                suggestions.style.display = "none"; // Hide suggestions when query is empty
+            }
+        }
+
+        // Function to play video from search result click
+        function playSearchResult(title) {
+            // Find the video wrapper using data-title matching the search result's title
+            const videoWrapper = Array.from(document.querySelectorAll('.video-wrapper')).find(wrapper =>
+                wrapper.getAttribute("data-title").toLowerCase() === title.toLowerCase()
+            );
+
+            // Ensure the videoWrapper exists, then play the video
+            if (videoWrapper) {
+                playVideo(videoWrapper);
+            }
+        }
+
+        // Function to hide the suggestions if clicked anywhere outside
+        document.addEventListener("click", function(event) {
+            const suggestions = document.getElementById("suggestions");
+            const searchBox = document.getElementById("search-box");
+
+            if (!searchBox.contains(event.target) && !suggestions.contains(event.target)) {
+                suggestions.style.display = "none"; // Hide suggestions if clicked outside
+            }
+        });
+
+        // Function to handle Enter key press
+        function handleKeyDown(event) {
+            if (event.key === "Enter") {
+                const firstSuggestion = document.querySelector("#suggestions .suggestion-item");
+                if (firstSuggestion) {
+                    firstSuggestion.click(); // Simulate a click on the first suggestion
+                }
+            }
+        }
+    </script>
+</body>
+</html>
